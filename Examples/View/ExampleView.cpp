@@ -49,30 +49,28 @@ Game::Game()
     : snakeBody_{new SnakeBody(this)}
 {}
 
-bool Game::init(QQmlContext* qmlContext, lager::store<Actions, Model>& store)
+bool Game::init(QQmlContext* qmlContext, lager::context<Actions> context)
 {
-    context_ = lager::context<Actions>(store);
+    context_ = std::move(context);
 
     qmlContext->setContextProperty(QStringLiteral("game"), this);
     qRegisterMetaType<SnakeBody*>("SnakeBody*");
 
-    watch(store, [&](auto&& /*old*/, auto&& state) { setModel(state); });
-
     return true;
 }
 
-void Game::setModel(Model model)
+void Game::update(Model /*old*/, Model state)
 {
-    snakeBody_->setModel(model.game.snake.body);
+    snakeBody_->setModel(state.game.snake.body);
 
-    auto newApplePosition = as_qpoint(model.game.apple_pos);
+    auto newApplePosition = as_qpoint(state.game.apple_pos);
     if (applePosition_ != newApplePosition) {
         applePosition_ = newApplePosition;
         emit applePositionChanged(applePosition_);
     }
 
-    if (over_ != model.game.over) {
-        over_ = model.game.over;
+    if (over_ != state.game.over) {
+        over_ = state.game.over;
         emit overChanged();
     }
 }

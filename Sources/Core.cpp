@@ -20,21 +20,29 @@ int Core::run(int argc, char** argv)
     m_engine = new QQmlApplicationEngine;
 
     Model initial_state;
-    auto updater = [this] (Model m, Actions a)
+    auto reducers = [this] (Model m, Actions a)
     {
         for( auto reducer : m_reducers )
             m = reducer->update(m, a);
         return m;
     };
+    auto views = [this] (auto&& old, auto&& state)
+    {
+        for( auto view : m_views )
+            view->update(old, state);
+    };
 
-    auto store = lager::make_store<Actions>(std::move(initial_state), updater,
+    auto store = lager::make_store<Actions>(std::move(initial_state), reducers,
                                     lager::with_qapplication_event_loop{app});
+    watch(store, views);
+
+    m_context = store;
 
     loadReducerPlugins();
     loadViewPlugins();
 
     startReducers();
-    startViews(store);
+    startViews();
 
     m_engine->load("qrc:/main.qml");
 
@@ -64,7 +72,7 @@ void Core::startReducers()
     }
 }
 
-void Core::startViews(lager::store<Actions, Model>& store)
+void Core::startViews()
 {
     for(auto& loader : m_viewLoaders)
     {
@@ -73,7 +81,7 @@ void Core::startViews(lager::store<Actions, Model>& store)
         if( plugin )
         {
             m_views.push_back( plugin );
-            plugin->init(m_engine->rootContext(), store);
+            plugin->init(m_engine->rootContext(), m_context);
         }
     }
 }
@@ -98,6 +106,28 @@ std::list<QPluginLoader> Core::loadLibrariesInFolder(QString folderName)
     }
 
     return ret;
+}
+
+void Core::reloadReducers()
+{
+    for(auto reducer : m_reducers)
+    {
+        delete reducer;
+    }
+    m_reducers.clear();
+
+    startReducers();
+}
+
+void Core::reloadViews()
+{
+    for(auto reducer : m_views)
+    {
+        delete reducer;
+    }
+    m_views.clear();
+
+    startViews();
 }
 
 } // namespace QtLager

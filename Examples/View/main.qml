@@ -20,12 +20,15 @@ ApplicationWindow {
     readonly property int initial_snake_size: 3
 
     Timer {
-        interval: Math.max(initial_timer_period - timer_decrement *
-                            Math.floor((snake.count - initial_snake_size) / timer_change_points)
-                           , min_timer_period)
+        interval: Math.max(
+                      initial_timer_period - timer_decrement * Math.floor(
+                          (snake.count - initial_snake_size) / timer_change_points),
+                      min_timer_period)
         repeat: true
         running: !game.over
-        onTriggered: { game.tick() }
+        onTriggered: {
+            game.tick()
+        }
     }
 
     MessageDialog {
@@ -62,20 +65,20 @@ ApplicationWindow {
 
         focus: true
         Keys.onPressed: {
-            if (event.key == Qt.Key_Left) {
+            if (event.key === Qt.Key_Left) {
                 game.left()
                 event.accepted = true
-            }
-            else if (event.key == Qt.Key_Right) {
+            } else if (event.key === Qt.Key_Right) {
                 game.right()
                 event.accepted = true
-            }
-            else if (event.key == Qt.Key_Up) {
+            } else if (event.key === Qt.Key_Up) {
                 game.up()
                 event.accepted = true
-            }
-            else if (event.key == Qt.Key_Down) {
+            } else if (event.key === Qt.Key_Down) {
                 game.down()
+                event.accepted = true
+            } else if (event.key === Qt.Key_F5) {
+                game.reload()
                 event.accepted = true
             }
         }
@@ -91,7 +94,10 @@ ApplicationWindow {
                 State {
                     name: "other"
                     changes: [
-                        PropertyChanges { target: apple; color: "green" }
+                        PropertyChanges {
+                            target: apple
+                            color: "green"
+                        }
                     ]
                 }
             ]

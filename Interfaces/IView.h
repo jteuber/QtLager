@@ -14,8 +14,8 @@ class IView
 public:
     virtual ~IView() = default;
 
-    virtual bool init(QQmlContext* qmlContext, lager::store<Actions, Model>& store) = 0;
-    virtual void setModel(Model model) = 0;
+    virtual bool init(QQmlContext* qmlContext, lager::context<Actions> context) = 0;
+    virtual void update(Model old, Model state) = 0;
 };
 
 } // namespace QtLager

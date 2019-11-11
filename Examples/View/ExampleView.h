@@ -40,9 +40,7 @@ private:
 class Game : public QObject, public QtLager::IView
 {
     Q_OBJECT
-#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID IView_iid)
-#endif // QT_VERSION >= 0x050000
     Q_INTERFACES(QtLager::IView)
 
 public:
@@ -63,8 +61,8 @@ public:
     Q_INVOKABLE void reset();
     Q_INVOKABLE void tick();
 
-    virtual bool init(QQmlContext* qmlContext, lager::store<Actions, Model>& store) override;
-    virtual void setModel(Model model) override;
+    virtual bool init(QQmlContext* qmlContext, lager::context<Actions> context) override;
+    virtual void update(Model /*old*/, Model state) override;
 
 signals:
     void applePositionChanged(QPoint);

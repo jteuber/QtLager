@@ -10,8 +10,10 @@
 
 namespace QtLager {
 
-class Core
+class Core : public QObject
 {
+    Q_OBJECT
+
 public:
     int run(int argc, char** argv);
 
@@ -20,7 +22,7 @@ private:
     void loadViewPlugins();
 
     void startReducers();
-    void startViews(lager::store<Actions, Model>& store);
+    void startViews();
 
     std::list<QPluginLoader> loadLibrariesInFolder(QString folderName);
 
@@ -32,6 +34,11 @@ private:
     std::list<IView*> m_views;
 
     QQmlApplicationEngine* m_engine;
+    lager::context<Actions> m_context;
+
+private slots:
+    void reloadReducers();
+    void reloadViews();
 };
 
 }
