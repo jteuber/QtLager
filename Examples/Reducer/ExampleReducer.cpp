@@ -79,6 +79,9 @@ Model Reducer::update(Model m, Actions action)
 {
     return std::visit(
         lager::visitor{
+            [&](ReservedActions) {
+                return m;
+            },
             [&](go_left) {
                 m.game.snake.dir = left(m.game.snake.dir);
                 return m;

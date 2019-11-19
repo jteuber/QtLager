@@ -24,7 +24,9 @@ private:
     void startReducers();
     void startViews();
 
-    std::list<QPluginLoader> loadLibrariesInFolder(QString folderName);
+    void internalReducer(Actions action);
+
+    std::list<QPluginLoader> loadPluginsInFolder(QString folderName);
 
 private:
     std::list<QPluginLoader> m_reducerLoaders;

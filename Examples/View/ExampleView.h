@@ -61,6 +61,9 @@ public:
     Q_INVOKABLE void reset();
     Q_INVOKABLE void tick();
 
+    Q_INVOKABLE void reload_views();
+    Q_INVOKABLE void reload_reducers();
+
     virtual bool init(QQmlContext* qmlContext, lager::context<Actions> context) override;
     virtual void update(Model /*old*/, Model state) override;
 

@@ -22,6 +22,7 @@ int Core::run(int argc, char** argv)
     Model initial_state;
     auto reducers = [this] (Model m, Actions a)
     {
+        internalReducer(a);
         for( auto reducer : m_reducers )
             m = reducer->update(m, a);
         return m;
@@ -51,12 +52,12 @@ int Core::run(int argc, char** argv)
 
 void Core::loadReducerPlugins()
 {
-    m_reducerLoaders = loadLibrariesInFolder("Reducers");
+    m_reducerLoaders = loadPluginsInFolder("Reducers");
 }
 
 void Core::loadViewPlugins()
 {
-    m_viewLoaders = loadLibrariesInFolder("Views");
+    m_viewLoaders = loadPluginsInFolder("Views");
 }
 
 void Core::startReducers()
@@ -64,6 +65,13 @@ void Core::startReducers()
     for(auto& loader : m_reducerLoaders)
     {
         auto instance = loader.instance();
+        if( !instance )
+        {
+            qWarning() << "Error loading plugin " << loader.fileName()
+                       << ":" << loader.errorString();
+            continue;
+        }
+
         auto plugin = qobject_cast<IReducer*>( instance );
         if( plugin )
         {
@@ -77,6 +85,13 @@ void Core::startViews()
     for(auto& loader : m_viewLoaders)
     {
         auto instance = loader.instance();
+        if( !instance )
+        {
+            qWarning() << "Error loading plugin " << loader.fileName()
+                       << ":" << loader.errorString();
+            continue;
+        }
+
         auto plugin = qobject_cast<IView*>( instance );
         if( plugin )
         {
@@ -86,22 +101,52 @@ void Core::startViews()
     }
 }
 
-std::list<QPluginLoader> Core::loadLibrariesInFolder(QString folderName)
+void Core::internalReducer(Actions action)
+{
+    if( std::holds_alternative<ReservedActions>(action) )
+    {
+        std::visit(
+                    lager::visitor{
+                        [&](reload_views) {
+                            reloadViews();
+                        },
+                        [&](reload_reducers) {
+                            reloadReducers();
+                        }
+                    }, std::get<ReservedActions>(action) );
+    }
+
+}
+
+std::list<QPluginLoader> Core::loadPluginsInFolder(QString folderName)
 {
     std::list<QPluginLoader> ret;
+
+    // To make plugin-hot-reloading possible on windows and safer on other platforms we have to work on copies
+    QString workFolderName = "."+folderName+"Copy";
+    // so create a folder for those copies
+    QDir libraryWorkDir(workFolderName);
+    // but if it already exists remove it first
+    libraryWorkDir.removeRecursively();
+    QDir(".").mkdir(workFolderName);
+
+    // now open the original plugin folder
     QDir libraryDir(folderName);
     libraryDir.setFilter( QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks );
 
+    // copy all plugins to the work folder and open the copies
     for( auto& entry : libraryDir.entryList() )
     {
         if( QLibrary::isLibrary( entry ) )
         {
-            ret.emplace_back( libraryDir.absoluteFilePath(entry) );
-            auto error = ret.back().errorString();
-            if( !error.isEmpty() )
+            if( !QFile::copy(libraryDir.absoluteFilePath(entry),
+                             libraryWorkDir.absoluteFilePath(entry)) )
             {
-                qWarning() << "Error loading plugin: " << error;
+                qWarning() << "Error copying plugin:" << libraryDir.absoluteFilePath(entry);
             }
+
+            ret.emplace_back( libraryWorkDir.absoluteFilePath(entry) );
+            ret.back().setLoadHints(QLibrary::LoadHints());
         }
     }
 
@@ -110,23 +155,35 @@ std::list<QPluginLoader> Core::loadLibrariesInFolder(QString folderName)
 
 void Core::reloadReducers()
 {
-    for(auto reducer : m_reducers)
+    qInfo() << "Core: reloading reducers";
+    for(auto& loader : m_reducerLoaders )
     {
-        delete reducer;
+        if( !loader.unload() )
+        {
+            qWarning() << "Error unloading reducer plugin: " << loader.errorString();
+        }
     }
     m_reducers.clear();
+    m_reducerLoaders.clear();
 
+    loadReducerPlugins();
     startReducers();
 }
 
 void Core::reloadViews()
 {
-    for(auto reducer : m_views)
+    qInfo() << "Core: reloading views";
+    for(auto& loader : m_viewLoaders )
     {
-        delete reducer;
+        if( !loader.unload() )
+        {
+            qWarning() << "Error unloading view plugin: " << loader.errorString();
+        }
     }
     m_views.clear();
+    m_viewLoaders.clear();
 
+    loadViewPlugins();
     startViews();
 }
 

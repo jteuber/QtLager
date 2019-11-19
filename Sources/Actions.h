@@ -3,6 +3,18 @@
 
 #include <variant>
 
+/// *** Reserved Actions ***
+/// these actions are reserved by the QtLager core. You can dispatch them from
+/// your views to trigger the described effect but they are not passed through
+/// to your reducers
+
+struct reload_views
+{};
+struct reload_reducers
+{};
+using ReservedActions = std::variant<reload_views, reload_reducers>;
+
+/// *** Custom Actions ***
 struct go_left
 {};
 struct go_right
@@ -15,6 +27,7 @@ struct reset
 {};
 struct tick
 {};
-using Actions = std::variant<go_left, go_right, go_up, go_down, reset, tick>;
+
+using Actions = std::variant<ReservedActions, go_left, go_right, go_up, go_down, reset, tick>;
 
 #endif // ACTIONS_H

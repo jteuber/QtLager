@@ -78,7 +78,10 @@ ApplicationWindow {
                 game.down()
                 event.accepted = true
             } else if (event.key === Qt.Key_F5) {
-                game.reload()
+                game.reload_views()
+                event.accepted = true
+            } else if (event.key === Qt.Key_F6) {
+                game.reload_reducers()
                 event.accepted = true
             }
         }

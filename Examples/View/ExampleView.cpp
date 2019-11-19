@@ -86,3 +86,13 @@ Q_INVOKABLE void Game::down() { context_.dispatch(go_down{}); }
 Q_INVOKABLE void Game::reset() { context_.dispatch(::reset{}); }
 
 Q_INVOKABLE void Game::tick() { context_.dispatch(::tick{}); }
+
+void Game::reload_views()
+{
+    context_.dispatch(::reload_views{});
+}
+
+void Game::reload_reducers()
+{
+    context_.dispatch(::reload_reducers{});
+}
