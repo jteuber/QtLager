@@ -7,8 +7,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QDir>
+#include <QDebug>
 
-#include <lager/event_loop/qapplication.hpp>
+#include <lager/event_loop/qt.hpp>
 
 #include "Model.h"
 
@@ -34,7 +35,7 @@ int Core::run(int argc, char** argv)
     };
 
     auto store = lager::make_store<Actions>(std::move(initial_state), reducers,
-                                    lager::with_qapplication_event_loop{app});
+                                    lager::with_qt_event_loop{app});
     watch(store, views);
 
     m_context = store;

@@ -17,6 +17,12 @@ weeks, so be careful if you already want to use it and maybe contact me for furt
 
 - clone this repo into your project folder or add it as a submodule
 - Do a `git submodule update --init --recursive`
+- Lager needs to be configured:
+  - go to Core/extern/lager
+  ```bash
+  mkdir -p build && cd build
+  cmake .. -D lager_BUILD_TESTS=OFF -D lager_BUILD_EXAMPLES=OFF -D lager_BUILD_DOCS=OFF
+  ```
 - Create a new cmake subdirectory-project in the parent folder and add Core
 - Create at least one reducer and one view plugin
   - you can create as many reducer and view plugins as you want
