@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Sources/Actions.h>
-#include <Sources/Model.h>
+#include "Actions.h"
+#include "Model.h"
 
 #include <Interfaces/IReducer.h>
 
-class Reducer : public QObject, public QtLager::IReducer
+class Reducer
+    : public QObject
+    , public QtLager::IReducer
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
@@ -14,5 +16,5 @@ class Reducer : public QObject, public QtLager::IReducer
     Q_INTERFACES(QtLager::IReducer)
 
 public:
-  virtual Model update(Model m, Actions action) override;
+    virtual Model update(Model m, Actions action) override;
 };

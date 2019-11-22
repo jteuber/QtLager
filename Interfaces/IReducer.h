@@ -2,8 +2,10 @@
 
 #include <QObject>
 
-#include "../Sources/Actions.h"
-#include "../Sources/Model.h"
+#define XSTR(x) #x
+#define STR(x) XSTR(x)
+#include STR(ACTIONS_HEADER)
+#include STR(MODEL_HEADER)
 
 namespace QtLager {
 
