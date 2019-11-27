@@ -13,16 +13,20 @@ find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
 ######## MODEL ########
 
-set(MODEL_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/Model.h)
+set(MODEL_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/model.h)
 set(MODEL_HEADER ${MODEL_HEADER} PARENT_SCOPE)
 add_compile_definitions(MODEL_HEADER=${MODEL_HEADER})
 
 
 ######## ACTION ########
 
-set(ACTIONS_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/Actions.h)
+set(ACTIONS_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/actions.h)
 set(ACTIONS_HEADER ${ACTIONS_HEADER} PARENT_SCOPE)
 add_compile_definitions(ACTIONS_HEADER=${ACTIONS_HEADER})
+
+
+# add custom target for IDEs
+add_custom_target(headers SOURCES ${ACTIONS_HEADER} ${MODEL_HEADER})
 
 
 ######## VIEW ########

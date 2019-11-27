@@ -12,7 +12,7 @@ struct reload_views
 {};
 struct reload_reducers
 {};
-using ReservedActions = std::variant<reload_views, reload_reducers>;
+using reserved_actions = std::variant<reload_views, reload_reducers>;
 
 /// *** Custom Actions ***
 struct go_left
@@ -28,6 +28,7 @@ struct reset
 struct tick
 {};
 
-using Actions = std::variant<ReservedActions, go_left, go_right, go_up, go_down, reset, tick>;
+using actions = std::
+    variant<reserved_actions, go_left, go_right, go_up, go_down, reset, tick>;
 
 #endif // ACTIONS_H

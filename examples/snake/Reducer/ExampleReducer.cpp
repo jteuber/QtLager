@@ -75,11 +75,11 @@ bool in_bounds(point_t p)
            y(p) < game_model::height;
 }
 
-Model Reducer::update(Model m, Actions action)
+model Reducer::update(model m, actions action)
 {
     return std::visit(
         lager::visitor{
-            [&](ReservedActions) {
+            [&](reserved_actions) {
                 return m;
             },
             [&](go_left) {

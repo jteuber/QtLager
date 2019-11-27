@@ -67,18 +67,18 @@ game_model make_game(Func&& random)
             false};
 }
 
-struct Model
+struct model
 {
     std::mt19937 gen;
     std::uniform_int_distribution<> dist;
 
     game_model game;
 
-    Model()
+    model()
         : dist{0, game_model::width - 1}
     {
         std::random_device rd;
-        gen = std::mt19937{unsigned(rd())};
+        gen  = std::mt19937{unsigned(rd())};
         game = make_game([&] { return dist(gen); });
     }
 };

@@ -49,7 +49,7 @@ Game::Game()
     : snakeBody_{new SnakeBody(this)}
 {}
 
-bool Game::init(QQmlContext* qmlContext, lager::context<Actions> context)
+bool Game::init(QQmlContext* qmlContext, lager::context<actions> context)
 {
     context_ = std::move(context);
 
@@ -59,7 +59,7 @@ bool Game::init(QQmlContext* qmlContext, lager::context<Actions> context)
     return true;
 }
 
-void Game::update(Model /*old*/, Model state)
+void Game::update(model /*old*/, model state)
 {
     snakeBody_->setModel(state.game.snake.body);
 

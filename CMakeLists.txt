@@ -13,19 +13,22 @@ include_directories(extern/immer extern/lager extern/cereal/include extern/zug)
 find_package(Qt5 COMPONENTS Core Quick Qml Concurrent Gui Widgets QuickControls2 REQUIRED)
 
 
-add_subdirectory(Examples/Snake)
+add_subdirectory(examples/snake)
 message("MODEL_HEADER: ${MODEL_HEADER}")
 message("ACTIONS_HEADER: ${ACTIONS_HEADER}")
+add_compile_definitions(ACTIONS_HEADER=${ACTIONS_HEADER} MODEL_HEADER=${MODEL_HEADER})
 
 
 set(SOURCES
-    Sources/main.cpp
-    Sources/Core.cpp)
+    private/main.cpp
+    private/core.cpp)
 
 set(HEADERS
-    Sources/Core.h
-    Interfaces/IReducer.h
-    Interfaces/IView.h)
+    private/core.h
+    public/reducer.h
+    public/view.h
+    public/effect_dispatcher.h
+    public/model_actions.h)
 
 set(OTHER
     README.md)
@@ -33,7 +36,6 @@ set(OTHER
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${ACTIONS} ${MODEL} ${OTHER})
-add_compile_definitions(ACTIONS_HEADER=${ACTIONS_HEADER} MODEL_HEADER=${MODEL_HEADER})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${OTHER})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::QuickControls2 -lstdc++)

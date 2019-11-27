@@ -1,4 +1,4 @@
-#include "Core.h"
+#include "core.h"
 
 #include <random>
 #include <utility>
@@ -18,13 +18,13 @@
 
 namespace QtLager {
 
-int Core::run(int argc, char** argv)
+int core::run(int argc, char** argv)
 {
     QApplication app{argc, argv};
     m_engine = new QQmlApplicationEngine;
 
-    Model initial_state;
-    auto reducers = [this](Model m, Actions a) {
+    model initial_state;
+    auto reducers = [this](model m, actions a) {
         internalReducer(a);
         for (auto reducer : m_reducers)
             m = reducer->update(m, a);
@@ -35,7 +35,7 @@ int Core::run(int argc, char** argv)
             view->update(old, state);
     };
 
-    auto store = lager::make_store<Actions>(
+    auto store = lager::make_store<actions>(
         std::move(initial_state), reducers, lager::with_qt_event_loop{app});
     watch(store, views);
 
@@ -52,14 +52,14 @@ int Core::run(int argc, char** argv)
     return app.exec();
 }
 
-void Core::loadReducerPlugins()
+void core::loadReducerPlugins()
 {
     m_reducerLoaders = loadPluginsInFolder("Reducers");
 }
 
-void Core::loadViewPlugins() { m_viewLoaders = loadPluginsInFolder("Views"); }
+void core::loadViewPlugins() { m_viewLoaders = loadPluginsInFolder("Views"); }
 
-void Core::startReducers()
+void core::startReducers()
 {
     for (auto& loader : m_reducerLoaders) {
         auto instance = loader.instance();
@@ -69,14 +69,14 @@ void Core::startReducers()
             continue;
         }
 
-        auto plugin = qobject_cast<IReducer*>(instance);
+        auto plugin = qobject_cast<reducer*>(instance);
         if (plugin) {
             m_reducers.push_back(plugin);
         }
     }
 }
 
-void Core::startViews()
+void core::startViews()
 {
     for (auto& loader : m_viewLoaders) {
         auto instance = loader.instance();
@@ -86,7 +86,7 @@ void Core::startViews()
             continue;
         }
 
-        auto plugin = qobject_cast<IView*>(instance);
+        auto plugin = qobject_cast<view*>(instance);
         if (plugin) {
             m_views.push_back(plugin);
             plugin->init(m_engine->rootContext(), m_context);
@@ -94,16 +94,16 @@ void Core::startViews()
     }
 }
 
-void Core::internalReducer(Actions action)
+void core::internalReducer(actions action)
 {
-    if (std::holds_alternative<ReservedActions>(action)) {
+    if (std::holds_alternative<reserved_actions>(action)) {
         std::visit(lager::visitor{[&](reload_views) { reloadViews(); },
                                   [&](reload_reducers) { reloadReducers(); }},
-                   std::get<ReservedActions>(action));
+                   std::get<reserved_actions>(action));
     }
 }
 
-std::list<QPluginLoader> Core::loadPluginsInFolder(QString folderName)
+std::list<QPluginLoader> core::loadPluginsInFolder(QString folderName)
 {
     std::list<QPluginLoader> ret;
 
@@ -137,7 +137,7 @@ std::list<QPluginLoader> Core::loadPluginsInFolder(QString folderName)
     return ret;
 }
 
-void Core::reloadReducers()
+void core::reloadReducers()
 {
     qInfo() << "Core: reloading reducers";
     for (auto& loader : m_reducerLoaders) {
@@ -153,7 +153,7 @@ void Core::reloadReducers()
     startReducers();
 }
 
-void Core::reloadViews()
+void core::reloadViews()
 {
     qInfo() << "Core: reloading views";
     for (auto& loader : m_viewLoaders) {

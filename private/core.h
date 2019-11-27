@@ -5,12 +5,12 @@
 
 #include <lager/store.hpp>
 
-#include "../Interfaces/IReducer.h"
-#include "../Interfaces/IView.h"
+#include "../public/reducer.h"
+#include "../public/view.h"
 
 namespace QtLager {
 
-class Core : public QObject
+class core : public QObject
 {
     Q_OBJECT
 
@@ -24,7 +24,7 @@ private:
     void startReducers();
     void startViews();
 
-    void internalReducer(Actions action);
+    void internalReducer(actions action);
 
     std::list<QPluginLoader> loadPluginsInFolder(QString folderName);
 
@@ -32,16 +32,15 @@ private:
     std::list<QPluginLoader> m_reducerLoaders;
     std::list<QPluginLoader> m_viewLoaders;
 
-    std::list<IReducer*> m_reducers;
-    std::list<IView*> m_views;
+    std::list<reducer*> m_reducers;
+    std::list<view*> m_views;
 
     QQmlApplicationEngine* m_engine;
-    lager::context<Actions> m_context;
+    lager::context<actions> m_context;
 
 private slots:
     void reloadReducers();
     void reloadViews();
 };
 
-}
-
+} // namespace QtLager

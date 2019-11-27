@@ -10,10 +10,10 @@
 // or here: <https://github.com/arximboldi/lager/blob/master/LICENSE>
 //
 
-#include "Core.h"
+#include "core.h"
 
 int main(int argc, char** argv)
 {
-    QtLager::Core main;
+    QtLager::core main;
     return main.run(argc, argv);
 }

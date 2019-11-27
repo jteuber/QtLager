@@ -18,7 +18,7 @@
 #include <QObject>
 #include <QPoint>
 
-#include <Interfaces/IView.h>
+#include <public/view.h>
 
 class SnakeBody : public QAbstractListModel
 {
@@ -37,11 +37,13 @@ private:
     snake_model::body_t data_;
 };
 
-class Game : public QObject, public QtLager::IView
+class Game
+    : public QObject
+    , public QtLager::view
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID IView_iid)
-    Q_INTERFACES(QtLager::IView)
+    Q_PLUGIN_METADATA(IID VIEW_IID)
+    Q_INTERFACES(QtLager::view)
 
 public:
     Game();
@@ -64,15 +66,16 @@ public:
     Q_INVOKABLE void reload_views();
     Q_INVOKABLE void reload_reducers();
 
-    virtual bool init(QQmlContext* qmlContext, lager::context<Actions> context) override;
-    virtual void update(Model /*old*/, Model state) override;
+    virtual bool init(QQmlContext* qmlContext,
+                      lager::context<actions> context) override;
+    virtual void update(model /*old*/, model state) override;
 
 signals:
     void applePositionChanged(QPoint);
     void overChanged();
 
 private:
-    lager::context<Actions> context_;
+    lager::context<actions> context_;
 
     SnakeBody* snakeBody_;
 
