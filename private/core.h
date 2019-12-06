@@ -5,6 +5,7 @@
 
 #include <lager/store.hpp>
 
+#include "../public/effect_dispatcher.h"
 #include "../public/reducer.h"
 #include "../public/view.h"
 
@@ -24,19 +25,20 @@ private:
     void startReducers();
     void startViews();
 
-    void internalReducer(actions action);
+    void internalReducer(action_t action);
 
     std::list<QPluginLoader> loadPluginsInFolder(QString folderName);
 
 private:
-    std::list<QPluginLoader> m_reducerLoaders;
     std::list<QPluginLoader> m_viewLoaders;
+    std::list<QPluginLoader> m_reducerLoaders;
 
-    std::list<reducer*> m_reducers;
     std::list<view*> m_views;
+    std::list<reducer*> m_reducers;
+    std::list<effect_dispatcher*> m_effectDispatchers;
 
     QQmlApplicationEngine* m_engine;
-    lager::context<actions> m_context;
+    lager::context<action_t> m_context;
 
 private slots:
     void reloadReducers();

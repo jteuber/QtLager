@@ -67,15 +67,15 @@ public:
     Q_INVOKABLE void reload_reducers();
 
     virtual bool init(QQmlContext* qmlContext,
-                      lager::context<actions> context) override;
-    virtual void update(model /*old*/, model state) override;
+                      lager::context<action_t> context) override;
+    virtual void update(model_t /*old*/, model_t state) override;
 
 signals:
     void applePositionChanged(QPoint);
     void overChanged();
 
 private:
-    lager::context<actions> context_;
+    lager::context<action_t> context_;
 
     SnakeBody* snakeBody_;
 

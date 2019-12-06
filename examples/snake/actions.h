@@ -28,7 +28,7 @@ struct reset
 struct tick
 {};
 
-using actions = std::
+using action_t = std::
     variant<reserved_actions, go_left, go_right, go_up, go_down, reset, tick>;
 
 #endif // ACTIONS_H

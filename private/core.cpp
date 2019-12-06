@@ -23,19 +23,32 @@ int core::run(int argc, char** argv)
     QApplication app{argc, argv};
     m_engine = new QQmlApplicationEngine;
 
-    model initial_state;
-    auto reducers = [this](model m, actions a) {
+    model_t initial_state;
+    auto reducers =
+        [this](model_t m,
+               action_t a) -> std::pair<model_t, lager::effect<action_t>> {
         internalReducer(a);
         for (auto reducer : m_reducers)
             m = reducer->update(m, a);
-        return m;
+
+        std::list<lager::effect<action_t>> effectList;
+        if (!m_effectDispatchers.empty()) {
+            for (auto dispatcher : m_effectDispatchers)
+                effectList.push_back(dispatcher->dispatch(m, a));
+        }
+
+        return {m, [effectList](auto&& ctx) {
+                    for (auto effect : effectList) {
+                        effect(ctx);
+                    }
+                }};
     };
     auto views = [this](auto&& old, auto&& state) {
         for (auto view : m_views)
             view->update(old, state);
     };
 
-    auto store = lager::make_store<actions>(
+    auto store = lager::make_store<action_t>(
         std::move(initial_state), reducers, lager::with_qt_event_loop{app});
     watch(store, views);
 
@@ -94,7 +107,7 @@ void core::startViews()
     }
 }
 
-void core::internalReducer(actions action)
+void core::internalReducer(action_t action)
 {
     if (std::holds_alternative<reserved_actions>(action)) {
         std::visit(lager::visitor{[&](reload_views) { reloadViews(); },

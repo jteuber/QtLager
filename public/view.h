@@ -14,8 +14,8 @@ public:
     virtual ~view() = default;
 
     virtual bool init(QQmlContext* qmlContext,
-                      lager::context<actions> context) = 0;
-    virtual void update(model old, model state)        = 0;
+                      lager::context<action_t> context) = 0;
+    virtual void update(model_t old, model_t state)     = 0;
 };
 
 } // namespace QtLager

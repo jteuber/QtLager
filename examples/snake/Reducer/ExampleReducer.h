@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Actions.h"
-#include "Model.h"
-
 #include <public/reducer.h>
 
 class Reducer
@@ -16,5 +13,5 @@ class Reducer
     Q_INTERFACES(QtLager::reducer)
 
 public:
-    virtual model update(model m, actions action) override;
+    virtual model_t update(model_t m, action_t action) override;
 };

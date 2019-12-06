@@ -11,7 +11,7 @@ class reducer
 public:
     virtual ~reducer() = default;
 
-    virtual model update(model m, actions action) = 0;
+    virtual model_t update(model_t m, action_t action) = 0;
 };
 
 } // namespace QtLager

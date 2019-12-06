@@ -82,3 +82,5 @@ struct model
         game = make_game([&] { return dist(gen); });
     }
 };
+
+using model_t = model;
